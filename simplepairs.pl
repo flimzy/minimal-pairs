@@ -97,7 +97,7 @@ for my $pair ( sort { scalar @{$pairs{$b}} <=> scalar @{$pairs{$a}} } keys %pair
         $j=0;
     }
     my @matches;
-    for my $ipa ( @{$pairs{$pair}} ) {
+    for my $ipa ( sort @{$pairs{$pair}} ) {
         $j++;
         my $gc = $ipa{$ipa}->[0];
         push @matches, sprintf "<td class='ipa'>/%s/</td><td>%s</td>\n",
