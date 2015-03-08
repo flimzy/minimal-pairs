@@ -77,6 +77,8 @@ td {
     font-family: 'Charis SIL', 'DejaVu Sans', 'Segoe UI', 'Lucida Grande', 'Doulos SIL', 'TITUS Cyberbit Basic', Code2000, 'Lucida Sans Unicode', sans-serif
 }
 </style>
+<h1>French Minimal Pairs</h1>
+<p>This file was generated automatically by a script which is <a href='https://github.com/flimzy/minimal-pairs/'>hosted on GitHub</a>.
 <table>
 EOF
 my $i=0;
