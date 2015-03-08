@@ -60,6 +60,12 @@ print<<EOF;
 EOF
 }
 
+my $count;
+for (keys %pairs) {
+    next if scalar @{$pairs{$_}}==1;
+    $count++;
+}
+
 print<<EOF;
 <html>
 <head>
@@ -77,16 +83,15 @@ td {
     font-family: 'Charis SIL', 'DejaVu Sans', 'Segoe UI', 'Lucida Grande', 'Doulos SIL', 'TITUS Cyberbit Basic', Code2000, 'Lucida Sans Unicode', sans-serif
 }
 </style>
-<h1>French Minimal Pairs</h1>
+<h1>$count French Minimal Pairs</h1>
 <p>This file was generated automatically by a script which is <a href='https://github.com/flimzy/minimal-pairs/'>hosted on GitHub</a>.
 <table>
 EOF
-my $i=0;
+
 my $j=0;
 heading();
 for my $pair ( sort { scalar @{$pairs{$b}} <=> scalar @{$pairs{$a}} } keys %pairs ) {
     last if scalar @{$pairs{$pair}} == 1;
-    $i++;
     if ( $j >= 30 ) {
         heading();
         $j=0;
@@ -107,4 +112,3 @@ print "</table>\n";
 
 printf "<p>Encountered %i distinct graphemes: %s</p>\n",
     scalar(keys %chars), join(' ', sort keys %chars);
-printf "<p>Found %i minimal pairs</p>\n", $i;
