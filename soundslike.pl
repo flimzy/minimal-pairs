@@ -39,19 +39,15 @@ my $longest_word = max ( map { $_->[0]->columns } values %ipa );
 
 my %pairs;
 
-#for (my $i=0; $i < $longest_word; $i++) {
-    for my $word (keys %ipa) {
-#        next if length($word) <= $i;
-        # print "$word";
-        my @matches = find_matches($word);
-        # printf "  (%i)\n", scalar @matches;
-        next if ! @matches;
-        $pairs{$word} ||= [];
-        push @{$pairs{$word}}, @matches;
-        # last if scalar keys %pairs > 100;
-    }
+for my $word (keys %ipa) {
+    # print "$word";
+    my @matches = find_matches($word);
+    # printf "  (%i)\n", scalar @matches;
+    next if ! @matches;
+    $pairs{$word} ||= [];
+    push @{$pairs{$word}}, @matches;
     # last if scalar keys %pairs > 100;
-#}
+}
 
 sub find_matches {
     my ( $word ) = @_;
