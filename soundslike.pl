@@ -39,23 +39,74 @@ my $longest_word = max ( map { $_->[0]->columns } values %ipa );
 
 my %pairs;
 
-for (my $i=0; $i < $longest_word; $i++) {
+#for (my $i=0; $i < $longest_word; $i++) {
     for my $word (keys %ipa) {
-        next if length($word) <= $i;
-        my @word = $ipa{$word}[0]->as_array;
-        delete $word[$i];
-        my $key = join('', grep { defined } @word);
-        $pairs{$key} ||= [];
-        push @{$pairs{$key}}, $word;
+#        next if length($word) <= $i;
+        # print "$word";
+        my @matches = find_matches($word);
+        # printf "  (%i)\n", scalar @matches;
+        next if ! @matches;
+        $pairs{$word} ||= [];
+        push @{$pairs{$word}}, @matches;
+        # last if scalar keys %pairs > 100;
+    }
+    # last if scalar keys %pairs > 100;
+#}
+
+sub find_matches {
+    my ( $word ) = @_;
+    my $len = $ipa{$word}[0]->columns;
+    my @candidates =
+        grep { $ipa{$_}[0]->columns eq $len } keys %ipa;
+    # printf("Found %i candiates\n", scalar @candidates);
+    # Eliminate words with more than one difference
+    # for (my $i=0; $i < $len-1; $i++) {
+    #
+    # }
+    my @final;
+    for my $c ( @candidates ) {
+        my @diff = array_diff($ipa{$word}->[0], $ipa{$c}->[0]);
+        # printf("Candidate: %s (%i difference)\n", $c, scalar @diff);
+        if (scalar @diff == 1) {
+            push @final, $c;
+        }
+    }
+    return @final;
+    for my $c ( @final ) {
+        printf("Final candidate: %s\n", $c);
     }
 }
+
+sub array_diff {
+    my ( $a, $b ) = @_;
+    my @diffidx;
+    for (my $i=0; $i< scalar @$a; $i++) {
+        if ( $a->[$i] ne $b->[$i] ) {
+            return if @diffidx == 1; # Early exit
+            push @diffidx, $i;
+        }
+    }
+    return @diffidx;
+}
+
+# for (my $i=0; $i < $longest_word; $i++) {
+#     for my $word (keys %ipa) {
+#         next if length($word) <= $i;
+#         my @word = $ipa{$word}[0]->as_array;
+#         delete $word[$i];
+#         my $key = join('', grep { defined } @word);
+#         $pairs{$key} ||= [];
+#         push @{$pairs{$key}}, $word;
+#     }
+# }
 
 sub heading {
 print<<EOF;
 <tr>
-    <th>Pronunciation Match</th>
+    <th>Main Pronunciation</th>
+    <th>Main Word(s)</th>
     <th>Pronunciation</th>
-    <th>Word(s)</th>
+    <th>Sounds like</th>
 </tr>
 EOF
 }
@@ -104,8 +155,10 @@ for my $pair ( sort { scalar @{$pairs{$b}} <=> scalar @{$pairs{$a}} || $a cmp $b
             $gc, join(', ',@{$ipa{$ipa}[1]});
     }
     my $matches = scalar(@{ $pairs{$pair} });
-    printf "<tr><td rowspan='%i'><span class='ipa'>~/%s/</span><br />%i phonetically similar words</td>\n",
+    printf "<tr><td rowspan='%i'><span class='ipa'>/%s/</span><br />%i phonetically similar words</td>\n",
         $matches, $pair, $matches;
+    printf "<td rowspan='%i'>" . join(', ', @{$ipa{$pair}[1]}) . "</td>\n",
+        $matches;
     print join("</tr>\n<tr>",@matches)."</tr>\n";
 }
 print "</table>\n";
